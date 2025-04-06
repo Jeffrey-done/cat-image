@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>喵咪图床 - 猫咪专属图片上传服务</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css">
+    <link rel="icon" href="https://cdn.jsdelivr.net/gh/cat-storage/images@main/cat-favicon.png" type="image/png">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class='bx bx-cat'></i>
+                <h1>喵咪图床</h1>
+            </div>
+            <p class="subtitle">喵星人专属图片上传服务，轻松分享你的萌宠瞬间</p>
+        </header>
+
+        <main>
+            <div class="status-panel" id="statusPanel">
+                <div class="status-info">
+                    <i class='bx bx-check-circle'></i>
+                    <span>服务已就绪，可以开始上传喵星人照片啦~</span>
+                </div>
+                <div class="repo-info" id="repoInfo" hidden>
+                    <div class="repo-size-container">
+                        <div class="repo-size-label">猫窝容量：<span id="repoSizeValue">0 MB</span> / 1 GB</div>
+                        <div class="repo-size-progress">
+                            <div class="repo-size-bar" id="repoSizeBar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="repo-size-warning" id="repoSizeWarning" hidden>
+                        <i class='bx bx-error'></i>
+                        <span>喵呜~猫窝快塞不下了，请清理一些照片吧！</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="view-toggle">
+                <button class="toggle-btn active" data-view="upload">上传照片</button>
+                <button class="toggle-btn" data-view="gallery">喵咪相册</button>
+            </div>
+            
+            <div class="views">
+                <div class="view upload-view active">
+                    <div class="upload-area" id="uploadArea">
+                        <i class='bx bx-image-add'></i>
+                        <h3>拖拽照片到这里上传</h3>
+                        <p>或者 <span class="browse-btn">浏览你的喵咪照片</span></p>
+                        <input type="file" id="fileInput" multiple accept="image/*" hidden>
+                    </div>
+
+                    <div class="upload-preview" hidden>
+                        <h3>上传队列 (<span id="fileCount">0</span>)</h3>
+                        <div class="file-list" id="fileList"></div>
+                        <div class="actions">
+                            <button id="uploadBtn" class="primary-btn">开始上传</button>
+                            <button id="clearBtn" class="secondary-btn">清空列表</button>
+                        </div>
+                    </div>
+
+                    <div class="results" hidden>
+                        <h3>上传结果</h3>
+                        <div class="result-list" id="resultList"></div>
+                        <div class="copy-all">
+                            <div class="copy-option">
+                                <label>
+                                    <input type="radio" name="linkType" value="markdown" checked> Markdown
+                                </label>
+                                <label>
+                                    <input type="radio" name="linkType" value="html"> HTML
+                                </label>
+                                <label>
+                                    <input type="radio" name="linkType" value="url"> URL
+                                </label>
+                            </div>
+                            <button id="copyAllBtn" class="primary-btn">复制全部链接</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="view gallery-view">
+                    <div class="gallery-header">
+                        <h3>喵咪相册</h3>
+                        <div class="gallery-actions">
+                            <button id="refreshGalleryBtn" class="secondary-btn">
+                                <i class='bx bx-refresh'></i> 刷新
+                            </button>
+                        </div>
+                    </div>
+                    <div class="gallery-loading" id="galleryLoading" hidden>
+                        <i class='bx bx-loader-alt bx-spin'></i>
+                        <p>正在加载喵星人照片...</p>
+                    </div>
+                    <div class="gallery-list" id="galleryList"></div>
+                    <div class="gallery-empty" id="galleryEmpty" hidden>
+                        <i class='bx bx-image'></i>
+                        <p>猫窝里还没有喵星人的照片</p>
+                    </div>
+                    <div class="gallery-error" id="galleryError" hidden>
+                        <i class='bx bx-error-circle'></i>
+                        <p>获取照片失败</p>
+                        <small id="galleryErrorMsg"></small>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>© 2023 喵咪图床 - 基于GitHub和jsDelivr的萌宠图片分享服务</p>
+        </footer>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html> 
