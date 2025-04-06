@@ -972,4 +972,187 @@ footer::after {
 .loading-gallery p {
     color: var(--dark-color);
     font-size: 1.1rem;
+}
+
+/* 文件类型信息样式 */
+.file-types-info {
+    margin: 20px 0 30px;
+    background-color: rgba(255, 248, 248, 0.7);
+    border-radius: var(--radius);
+    padding: 15px;
+    border: 2px dashed var(--border-color);
+}
+
+.file-types-info h4 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+    color: var(--dark-color);
+}
+
+.file-types-info h4 i {
+    color: var(--primary-color);
+    font-size: 1.2rem;
+}
+
+.file-types-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 15px;
+}
+
+.file-type-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px;
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    transition: var(--transition);
+}
+
+.file-type-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 10px var(--shadow-color);
+    background-color: white;
+}
+
+.file-type-item i {
+    font-size: 2rem;
+    margin-bottom: 8px;
+    color: var(--primary-color);
+}
+
+.file-type-item span {
+    font-size: 0.85rem;
+    color: var(--text-color);
+}
+
+/* 文件上传区域样式 */
+.files-upload-area {
+    border: 3px dashed var(--secondary-color);
+    border-radius: var(--radius);
+    padding: 40px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: var(--transition);
+    margin-bottom: 20px;
+    position: relative;
+    background-color: rgba(255, 194, 209, 0.05);
+}
+
+.files-upload-area:hover {
+    border-color: var(--primary-color);
+    background-color: rgba(255, 143, 171, 0.05);
+    transform: scale(1.01);
+}
+
+/* 猫咪文件图标 */
+.files-upload-area i {
+    font-size: 3.5rem;
+    color: var(--primary-color);
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.files-upload-area i::after {
+    content: '🐱';
+    position: absolute;
+    font-size: 1.5rem;
+    top: -10px;
+    right: -15px;
+}
+
+.files-upload-area h3 {
+    margin-bottom: 12px;
+    color: var(--dark-color);
+    font-weight: 600;
+}
+
+.files-upload-area p {
+    color: var(--text-color);
+    opacity: 0.8;
+}
+
+.files-upload-area.dragover {
+    border-color: var(--primary-color);
+    background-color: rgba(255, 143, 171, 0.08);
+    transform: scale(1.02);
+}
+
+.files-upload-preview {
+    margin-bottom: 30px;
+    animation: slide-up 0.4s ease;
+}
+
+.files-results {
+    margin-top: 30px;
+    animation: slide-up 0.4s ease;
+}
+
+/* 文件图标 */
+.file-item .file-icon {
+    font-size: 1.5rem;
+    margin-right: 15px;
+}
+
+.file-item .file-icon.doc {
+    color: #4285F4;
+}
+
+.file-item .file-icon.pdf {
+    color: #DB4437;
+}
+
+.file-item .file-icon.zip {
+    color: #F4B400;
+}
+
+.file-item .file-icon.code {
+    color: #0F9D58;
+}
+
+.file-item .file-icon.audio {
+    color: #AA47BC;
+}
+
+.file-item .file-icon.video {
+    color: #E91E63;
+}
+
+.file-item .file-icon.image {
+    color: var(--primary-color);
+}
+
+.file-item .file-icon.default {
+    color: #607D8B;
+}
+
+/* 文件结果展示 */
+.file-result-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    margin-right: 15px;
+    background-color: rgba(255, 248, 248, 0.7);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+/* 文件类型标签 */
+.file-type-tag {
+    display: inline-block;
+    padding: 3px 8px;
+    background-color: rgba(255, 143, 171, 0.1);
+    border-radius: 30px;
+    font-size: 0.7rem;
+    margin-left: 10px;
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+    font-weight: normal;
 } 

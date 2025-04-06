@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>喵咪图床 - 猫咪专属图片上传服务</title>
+    <title>喵咪图床 - 猫咪专属图片与文件上传服务</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css">
     <link rel="icon" href="https://cdn.jsdelivr.net/gh/cat-storage/images@main/cat-favicon.png" type="image/png">
@@ -15,14 +15,14 @@
                 <i class='bx bx-cat'></i>
                 <h1>喵咪图床</h1>
             </div>
-            <p class="subtitle">喵星人专属图片上传服务，轻松分享你的萌宠瞬间</p>
+            <p class="subtitle">喵星人专属图片与文件上传服务，轻松分享你的萌宠瞬间与各类文件</p>
         </header>
 
         <main>
             <div class="status-panel" id="statusPanel">
                 <div class="status-info">
                     <i class='bx bx-check-circle'></i>
-                    <span>服务已就绪，可以开始上传喵星人照片啦~</span>
+                    <span>服务已就绪，可以开始上传喵星人照片和文件啦~</span>
                 </div>
                 <div class="repo-info" id="repoInfo" hidden>
                     <div class="repo-size-container">
@@ -33,13 +33,14 @@
                     </div>
                     <div class="repo-size-warning" id="repoSizeWarning" hidden>
                         <i class='bx bx-error'></i>
-                        <span>喵呜~猫窝快塞不下了，请清理一些照片吧！</span>
+                        <span>喵呜~猫窝快塞不下了，请清理一些文件吧！</span>
                     </div>
                 </div>
             </div>
             
             <div class="view-toggle">
                 <button class="toggle-btn active" data-view="upload">上传照片</button>
+                <button class="toggle-btn" data-view="files">文件直链</button>
                 <button class="toggle-btn" data-view="gallery">喵咪相册</button>
             </div>
             
@@ -81,6 +82,81 @@
                     </div>
                 </div>
                 
+                <div class="view files-view">
+                    <div class="files-upload-area" id="filesUploadArea">
+                        <i class='bx bx-file-blank'></i>
+                        <h3>拖拽任意文件到这里上传</h3>
+                        <p>或者 <span class="browse-btn">浏览你的文件</span></p>
+                        <input type="file" id="filesInput" multiple hidden>
+                    </div>
+
+                    <div class="file-types-info">
+                        <h4>支持的文件类型 <i class='bx bx-info-circle'></i></h4>
+                        <div class="file-types-grid">
+                            <div class="file-type-item">
+                                <i class='bx bxs-file-doc'></i>
+                                <span>文档</span>
+                            </div>
+                            <div class="file-type-item">
+                                <i class='bx bxs-file-pdf'></i>
+                                <span>PDF</span>
+                            </div>
+                            <div class="file-type-item">
+                                <i class='bx bxs-file-archive'></i>
+                                <span>压缩包</span>
+                            </div>
+                            <div class="file-type-item">
+                                <i class='bx bxs-file-css'></i>
+                                <span>代码</span>
+                            </div>
+                            <div class="file-type-item">
+                                <i class='bx bxs-file-html'></i>
+                                <span>网页</span>
+                            </div>
+                            <div class="file-type-item">
+                                <i class='bx bxs-file-js'></i>
+                                <span>脚本</span>
+                            </div>
+                            <div class="file-type-item">
+                                <i class='bx bxs-file-json'></i>
+                                <span>数据</span>
+                            </div>
+                            <div class="file-type-item">
+                                <i class='bx bxs-file'></i>
+                                <span>更多...</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="files-upload-preview" hidden>
+                        <h3>上传队列 (<span id="filesCount">0</span>)</h3>
+                        <div class="file-list" id="filesFileList"></div>
+                        <div class="actions">
+                            <button id="filesUploadBtn" class="primary-btn">开始上传</button>
+                            <button id="filesClearBtn" class="secondary-btn">清空列表</button>
+                        </div>
+                    </div>
+
+                    <div class="files-results" hidden>
+                        <h3>上传结果</h3>
+                        <div class="result-list" id="filesResultList"></div>
+                        <div class="copy-all">
+                            <div class="copy-option">
+                                <label>
+                                    <input type="radio" name="filesLinkType" value="markdown" checked> Markdown
+                                </label>
+                                <label>
+                                    <input type="radio" name="filesLinkType" value="html"> HTML
+                                </label>
+                                <label>
+                                    <input type="radio" name="filesLinkType" value="url"> URL
+                                </label>
+                            </div>
+                            <button id="filesCopyAllBtn" class="primary-btn">复制全部链接</button>
+                        </div>
+                    </div>
+                </div>
+                
                 <div class="view gallery-view">
                     <div class="gallery-header">
                         <h3>喵咪相册</h3>
@@ -109,7 +185,7 @@
         </main>
 
         <footer>
-            <p>© 2023 喵咪图床 - 基于GitHub和jsDelivr的萌宠图片分享服务</p>
+            <p>© 2023 喵咪图床 - 基于GitHub和jsDelivr的萌宠图片与任意文件分享服务</p>
         </footer>
     </div>
 

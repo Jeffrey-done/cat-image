@@ -9,14 +9,82 @@ const config = {
     // 猫咪鼓励语
     catPhrases: [
         '喵~上传成功了呢！',
-        '完美的照片，喵星人很满意！',
-        '喵喵喵，照片真好看！',
-        '铲屎官辛苦了，照片已上传喵~',
-        '猫咪点赞，照片已保存！',
-        '喵星人表示很满意这张照片！',
-        '毛茸茸的照片已经保存啦！',
-        '喵呜~照片已经安全地存进猫窝了！'
-    ]
+        '完美的文件，喵星人很满意！',
+        '喵喵喵，上传真顺利！',
+        '铲屎官辛苦了，文件已上传喵~',
+        '猫咪点赞，文件已保存！',
+        '喵星人表示很满意这个文件！',
+        '毛茸茸的文件已经保存啦！',
+        '喵呜~文件已经安全地存进猫窝了！'
+    ],
+    // 文件类型图标映射
+    fileTypeIcons: {
+        'doc': 'bxs-file-doc',
+        'docx': 'bxs-file-doc',
+        'xls': 'bxs-file-doc',
+        'xlsx': 'bxs-file-doc',
+        'ppt': 'bxs-file-doc',
+        'pptx': 'bxs-file-doc',
+        'pdf': 'bxs-file-pdf',
+        'zip': 'bxs-file-archive',
+        'rar': 'bxs-file-archive',
+        '7z': 'bxs-file-archive',
+        'tar': 'bxs-file-archive',
+        'gz': 'bxs-file-archive',
+        'mp3': 'bxs-file-plus',
+        'wav': 'bxs-file-plus',
+        'mp4': 'bxs-file-plus',
+        'mov': 'bxs-file-plus',
+        'avi': 'bxs-file-plus',
+        'html': 'bxs-file-html',
+        'css': 'bxs-file-css',
+        'js': 'bxs-file-js',
+        'ts': 'bxs-file-js',
+        'json': 'bxs-file-json',
+        'xml': 'bxs-file-json',
+        'txt': 'bxs-file-txt',
+        'md': 'bxs-file-md',
+        'jpg': 'bxs-file-image',
+        'jpeg': 'bxs-file-image',
+        'png': 'bxs-file-image',
+        'gif': 'bxs-file-image',
+        'svg': 'bxs-file-image',
+        'webp': 'bxs-file-image'
+    },
+    // 文件类型名称映射
+    fileTypeNames: {
+        'doc': '文档',
+        'docx': '文档',
+        'xls': '表格',
+        'xlsx': '表格',
+        'ppt': '演示',
+        'pptx': '演示',
+        'pdf': 'PDF',
+        'zip': '压缩包',
+        'rar': '压缩包',
+        '7z': '压缩包',
+        'tar': '压缩包',
+        'gz': '压缩包',
+        'mp3': '音频',
+        'wav': '音频',
+        'mp4': '视频',
+        'mov': '视频',
+        'avi': '视频',
+        'html': 'HTML',
+        'css': 'CSS',
+        'js': 'JS脚本',
+        'ts': 'TS脚本',
+        'json': 'JSON',
+        'xml': 'XML',
+        'txt': '文本',
+        'md': 'Markdown',
+        'jpg': '图片',
+        'jpeg': '图片',
+        'png': '图片',
+        'gif': '图片',
+        'svg': '矢量图',
+        'webp': '图片'
+    }
 };
 
 // DOM元素
@@ -41,7 +109,17 @@ const elements = {
     galleryEmpty: document.getElementById('galleryEmpty'),
     galleryError: document.getElementById('galleryError'),
     galleryErrorMsg: document.getElementById('galleryErrorMsg'),
-    refreshGalleryBtn: document.getElementById('refreshGalleryBtn')
+    refreshGalleryBtn: document.getElementById('refreshGalleryBtn'),
+    
+    // 文件直链相关元素
+    filesUploadArea: document.getElementById('filesUploadArea'),
+    filesInput: document.getElementById('filesInput'),
+    filesFileList: document.getElementById('filesFileList'),
+    filesCount: document.getElementById('filesCount'),
+    filesUploadBtn: document.getElementById('filesUploadBtn'),
+    filesClearBtn: document.getElementById('filesClearBtn'),
+    filesResultList: document.getElementById('filesResultList'),
+    filesCopyAllBtn: document.getElementById('filesCopyAllBtn')
 };
 
 // 状态变量
@@ -49,6 +127,11 @@ let uploadQueue = [];
 let uploadResults = [];
 let currentGalleryImages = [];
 let isUploading = false;
+
+// 文件直链状态变量
+let filesUploadQueue = [];
+let filesUploadResults = [];
+let isFilesUploading = false;
 
 // 获取随机猫咪表情
 function getRandomCatEmoji() {
@@ -187,6 +270,46 @@ function bindEvents() {
     
     // 刷新图库按钮事件
     elements.refreshGalleryBtn.addEventListener('click', loadGallery);
+    
+    // 文件直链相关事件绑定
+    // 文件上传区域点击事件
+    elements.filesUploadArea.addEventListener('click', () => {
+        elements.filesInput.click();
+    });
+    
+    // 文件输入变化事件
+    elements.filesInput.addEventListener('change', handleFilesSelect);
+    
+    // 文件拖放事件
+    elements.filesUploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        elements.filesUploadArea.classList.add('dragover');
+        elements.filesUploadArea.querySelector('i').textContent = '😻'; // 猫咪高兴表情
+    });
+    
+    elements.filesUploadArea.addEventListener('dragleave', () => {
+        elements.filesUploadArea.classList.remove('dragover');
+        elements.filesUploadArea.querySelector('i').textContent = ''; // 恢复原样
+    });
+    
+    elements.filesUploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        elements.filesUploadArea.classList.remove('dragover');
+        elements.filesUploadArea.querySelector('i').textContent = '';
+        
+        if (e.dataTransfer.files.length > 0) {
+            handleFilesSelect({ target: { files: e.dataTransfer.files } });
+            // 播放猫咪音效
+            playCatSound();
+        }
+    });
+    
+    // 文件上传和清空按钮事件
+    elements.filesUploadBtn.addEventListener('click', startFilesUpload);
+    elements.filesClearBtn.addEventListener('click', clearFilesUploadList);
+    
+    // 复制所有文件链接按钮事件
+    elements.filesCopyAllBtn.addEventListener('click', copyAllFilesLinks);
 }
 
 // 切换视图
@@ -1072,6 +1195,425 @@ function showNotification(message, type = 'info') {
     setTimeout(() => {
         notification.remove();
     }, 3500);
+}
+
+// 文件处理的辅助函数
+
+// 获取文件扩展名
+function getFileExtension(filename) {
+    return filename.split('.').pop().toLowerCase();
+}
+
+// 获取文件类型图标
+function getFileIcon(filename) {
+    const ext = getFileExtension(filename);
+    return config.fileTypeIcons[ext] || 'bxs-file';
+}
+
+// 获取文件类型名称
+function getFileTypeName(filename) {
+    const ext = getFileExtension(filename);
+    return config.fileTypeNames[ext] || '文件';
+}
+
+// 获取文件图标的CSS类
+function getFileIconClass(filename) {
+    const ext = getFileExtension(filename);
+    
+    if (ext.match(/^(jpg|jpeg|png|gif|bmp|webp|svg)$/)) {
+        return 'image';
+    } else if (ext.match(/^(doc|docx|txt|rtf|odt|md)$/)) {
+        return 'doc';
+    } else if (ext.match(/^(pdf)$/)) {
+        return 'pdf';
+    } else if (ext.match(/^(zip|rar|7z|tar|gz)$/)) {
+        return 'zip';
+    } else if (ext.match(/^(html|htm|css|js|ts|json|xml)$/)) {
+        return 'code';
+    } else if (ext.match(/^(mp3|wav|ogg|flac|aac)$/)) {
+        return 'audio';
+    } else if (ext.match(/^(mp4|avi|mov|wmv|flv|mkv)$/)) {
+        return 'video';
+    }
+    
+    return 'default';
+}
+
+// 处理文件上传选择 (任意文件)
+function handleFilesSelect(e) {
+    if (e.target.files.length > 0) {
+        handleFilesUpload(e.target.files);
+    }
+}
+
+// 处理文件上传 (任意文件)
+function handleFilesUpload(files) {
+    if (files.length === 0) {
+        return;
+    }
+    
+    // 添加到上传队列
+    Array.from(files).forEach(file => {
+        // 检查文件是否已在队列中
+        const isExist = filesUploadQueue.some(item => 
+            item.name === file.name && 
+            item.size === file.size && 
+            item.lastModified === file.lastModified
+        );
+        
+        if (!isExist) {
+            filesUploadQueue.push(file);
+        }
+    });
+    
+    // 更新文件列表显示
+    updateFilesUploadList();
+    
+    // 显示上传预览
+    document.querySelector('.files-upload-preview').hidden = false;
+    
+    // 显示猫咪消息
+    showNotification(`喵~ 已添加${files.length}个文件到上传队列 ${getRandomCatEmoji()}`, 'success');
+}
+
+// 更新文件上传列表显示 (任意文件)
+function updateFilesUploadList() {
+    // 更新文件计数
+    elements.filesCount.textContent = filesUploadQueue.length;
+    
+    // 清空当前列表
+    elements.filesFileList.innerHTML = '';
+    
+    // 添加文件项
+    filesUploadQueue.forEach((file, index) => {
+        const fileItem = document.createElement('div');
+        fileItem.className = 'file-item';
+        
+        // 格式化文件大小
+        const formattedSize = formatFileSize(file.size);
+        
+        // 获取文件图标
+        const iconClass = getFileIconClass(file.name);
+        const fileIcon = getFileIcon(file.name);
+        
+        fileItem.innerHTML = `
+            <i class='bx ${fileIcon} file-icon ${iconClass}'></i>
+            <div class="file-info">
+                <div class="file-name">${file.name}</div>
+                <div class="file-size">${formattedSize} <span class="file-type-tag">${getFileTypeName(file.name)}</span></div>
+            </div>
+            <i class='bx bx-x file-remove' data-index="${index}"></i>
+        `;
+        
+        elements.filesFileList.appendChild(fileItem);
+    });
+    
+    // 绑定移除按钮事件
+    elements.filesFileList.querySelectorAll('.file-remove').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const index = parseInt(e.target.getAttribute('data-index'));
+            removeFilesUpload(index);
+        });
+    });
+    
+    // 更新上传按钮状态
+    elements.filesUploadBtn.disabled = filesUploadQueue.length === 0;
+}
+
+// 移除文件 (任意文件)
+function removeFilesUpload(index) {
+    filesUploadQueue.splice(index, 1);
+    updateFilesUploadList();
+    
+    // 如果队列为空，隐藏上传预览
+    if (filesUploadQueue.length === 0) {
+        document.querySelector('.files-upload-preview').hidden = true;
+    }
+}
+
+// 清空文件列表 (任意文件)
+function clearFilesUploadList() {
+    filesUploadQueue = [];
+    updateFilesUploadList();
+    document.querySelector('.files-upload-preview').hidden = true;
+    
+    // 显示猫咪消息
+    showNotification(`喵~ 已清空上传队列 ${getRandomCatEmoji()}`, 'info');
+}
+
+// 复制所有文件链接
+function copyAllFilesLinks() {
+    const successResults = filesUploadResults.filter(result => result.status === 'success');
+    
+    if (successResults.length === 0) {
+        showNotification('喵呜~ 没有可复制的链接', 'error');
+        return;
+    }
+    
+    // 获取选中的链接类型
+    const linkType = document.querySelector('input[name="filesLinkType"]:checked').value;
+    
+    // 根据不同类型生成链接文本
+    let text = '';
+    
+    for (const result of successResults) {
+        const title = result.originalFilename || result.filename;
+        
+        switch (linkType) {
+            case 'markdown':
+                text += `[${title}](${result.jsdelivrUrl})\n\n`;
+                break;
+            case 'html':
+                text += `<a href="${result.jsdelivrUrl}" target="_blank">${title}</a>\n\n`;
+                break;
+            case 'url':
+                text += `${result.jsdelivrUrl}\n\n`;
+                break;
+        }
+    }
+    
+    // 复制到剪贴板
+    navigator.clipboard.writeText(text.trim()).then(() => {
+        const button = elements.filesCopyAllBtn;
+        const originalText = button.textContent;
+        button.textContent = '已复制喵~';
+        button.style.backgroundColor = 'var(--success-color)';
+        
+        // 播放猫咪音效
+        playCatSound();
+        // 显示猫爪动画
+        showCatPaw();
+        
+        setTimeout(() => {
+            button.textContent = originalText;
+            button.style.backgroundColor = '';
+        }, 2000);
+        
+        // 显示提示
+        showNotification(`喵~ 已复制${successResults.length}个文件链接 ${getRandomCatEmoji()}`, 'success');
+    }).catch(err => {
+        console.error('复制失败:', err);
+        showNotification('喵呜~ 复制失败了，请手动复制', 'error');
+    });
+}
+
+// 开始文件上传 (任意文件)
+async function startFilesUpload() {
+    if (filesUploadQueue.length === 0 || isFilesUploading) {
+        return;
+    }
+    
+    isFilesUploading = true;
+    elements.filesUploadBtn.disabled = true;
+    elements.filesUploadBtn.textContent = '上传中...喵~';
+    
+    // 显示结果区域
+    document.querySelector('.files-results').hidden = false;
+    
+    // 清空结果列表
+    elements.filesResultList.innerHTML = '';
+    
+    // 清空结果数组
+    filesUploadResults = [];
+    
+    // 显示猫咪提示
+    showNotification(`喵呜~ 正在上传${filesUploadQueue.length}个文件，请稍等... ${getRandomCatEmoji()}`, 'info');
+    
+    // 逐个上传文件
+    for (let i = 0; i < filesUploadQueue.length; i++) {
+        const file = filesUploadQueue[i];
+        await uploadGenericFile(file, i);
+    }
+    
+    // 更新仓库信息
+    fetchRepoConfig();
+    
+    // 恢复上传按钮状态
+    isFilesUploading = false;
+    elements.filesUploadBtn.disabled = false;
+    elements.filesUploadBtn.textContent = '开始上传';
+    
+    // 清空上传队列
+    filesUploadQueue = [];
+    document.querySelector('.files-upload-preview').hidden = true;
+    
+    // 全部上传完成的提示
+    if (filesUploadResults.filter(r => r.status === 'success').length > 0) {
+        showNotification(getRandomCatPhrase(), 'success');
+    }
+}
+
+// 上传任意文件
+async function uploadGenericFile(file, index) {
+    // 创建FormData
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    // 创建结果项
+    const resultItem = document.createElement('div');
+    resultItem.id = `files-result-${index}`;
+    resultItem.className = 'result-item loading';
+    
+    // 获取文件图标
+    const fileIcon = getFileIcon(file.name);
+    
+    resultItem.innerHTML = `
+        <div class="result-info">
+            <div class="result-filename">
+                <i class='bx ${fileIcon}'></i> ${file.name}
+            </div>
+            <div class="result-progress">
+                <span class="progress-message">喵呜~ 努力上传中...</span>
+                <div class="progress-bar">
+                    <div class="progress-inner"></div>
+                </div>
+            </div>
+        </div>
+    `;
+    elements.filesResultList.appendChild(resultItem);
+    
+    try {
+        const startTime = Date.now();
+        
+        // 显示随机的猫咪上传消息
+        const progressMessages = [
+            '喵喵~正在努力上传...',
+            '小猫咪加速中...',
+            '文件即将送达猫窝...',
+            '猫爪按下上传按钮...',
+            '正用猫咪搬运文件...',
+            '小猫咪正在打包文件...'
+        ];
+        
+        // 创建随机进度更新
+        const updateProgress = () => {
+            const elapsed = Date.now() - startTime;
+            const progressInner = resultItem.querySelector('.progress-inner');
+            const progressMessage = resultItem.querySelector('.progress-message');
+            
+            // 随机更新进度
+            if (elapsed < 10000) {  // 10秒内
+                const progress = Math.min(95, elapsed / 100 + Math.random() * 10);
+                progressInner.style.width = `${progress}%`;
+                
+                // 随机更新消息
+                if (Math.random() > 0.9) {
+                    progressMessage.textContent = progressMessages[Math.floor(Math.random() * progressMessages.length)];
+                }
+                
+                progressTimer = setTimeout(updateProgress, 200 + Math.random() * 500);
+            }
+        };
+        
+        // 开始进度更新
+        let progressTimer = setTimeout(updateProgress, 200);
+        
+        // 发送请求
+        const response = await fetch(`${config.apiUrl}/upload`, {
+            method: 'POST',
+            body: formData,
+        });
+        
+        // 清除进度更新
+        clearTimeout(progressTimer);
+        
+        if (!response.ok) {
+            throw new Error(`喵呜~ 上传失败了: ${response.statusText}`);
+        }
+        
+        const result = await response.json();
+        
+        if (result.error) {
+            throw new Error(result.error);
+        }
+        
+        // 添加原始文件对象到结果，用于记录文件类型
+        result.file = file;
+        result.status = 'success';
+        result.fileType = getFileTypeName(file.name);
+        result.fileIcon = getFileIcon(file.name);
+        
+        // 更新上传结果
+        filesUploadResults[index] = result;
+        updateFilesResultItem(result, index);
+        
+        // 播放成功声音
+        playCatSound();
+        
+    } catch (error) {
+        console.error('上传失败:', error);
+        
+        // 更新上传结果
+        filesUploadResults[index] = {
+            filename: file.name,
+            status: 'error',
+            error: error.message || '喵呜~ 上传失败了',
+            fileIcon: getFileIcon(file.name)
+        };
+        
+        updateFilesResultItem(filesUploadResults[index], index);
+    }
+}
+
+// 更新文件上传结果项
+function updateFilesResultItem(result, index) {
+    const resultItem = document.getElementById(`files-result-${index}`);
+    
+    if (!resultItem) return;
+    
+    resultItem.className = `result-item ${result.status}`;
+    
+    if (result.status === 'success') {
+        // 格式化时间
+        const uploadTime = result.uploadTime ? formatDate(new Date(result.uploadTime)) : '刚刚';
+        
+        // 文件类型
+        const fileType = result.fileType || getFileTypeName(result.filename);
+        
+        resultItem.innerHTML = `
+            <div class="result-thumb-container">
+                <div class="file-result-icon">
+                    <i class='bx ${result.fileIcon || getFileIcon(result.filename)}'></i>
+                </div>
+                <div class="result-info">
+                    <div class="result-filename">${result.originalFilename || result.filename} ${getRandomCatEmoji()}</div>
+                    <div class="result-time">上传时间: ${uploadTime} <span class="file-type-tag">${fileType}</span></div>
+                </div>
+            </div>
+            <div class="result-links">
+                <div class="link-group">
+                    <span class="link-label">jsDelivr:</span>
+                    <span class="link-value">${result.jsdelivrUrl}</span>
+                    <button class="copy-btn" data-clipboard="${result.jsdelivrUrl}">复制</button>
+                </div>
+                <div class="link-group">
+                    <span class="link-label">GitHub:</span>
+                    <span class="link-value">${result.rawUrl}</span>
+                    <button class="copy-btn" data-clipboard="${result.rawUrl}">复制</button>
+                </div>
+            </div>
+        `;
+    } else if (result.status === 'error') {
+        resultItem.innerHTML = `
+            <div class="result-info">
+                <div class="result-filename">
+                    <i class='bx ${result.fileIcon || 'bxs-file'}'></i> 
+                    ${result.filename} 😿
+                </div>
+                <div class="result-message">${result.error}</div>
+            </div>
+        `;
+    }
+    
+    // 绑定复制按钮事件
+    if (result.status === 'success') {
+        resultItem.querySelectorAll('.copy-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const text = this.getAttribute('data-clipboard');
+                copyToClipboard(text, this);
+            });
+        });
+    }
 }
 
 // 初始化应用
